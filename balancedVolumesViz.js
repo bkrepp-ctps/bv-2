@@ -1,5 +1,15 @@
-// Draft version: support both NB/SB and EB/WB routes
-
+// Visualization of balanced volume data for limited-access (express) highways in the Boston Region MPO area.
+// Developed as part of UPWP Project #13291 of the Boston Region Metropolitan Planning Organization for Federal Fiscal Year 2019.
+//
+// This is a draft version that supports both NB/SB and EB/WB routes.
+// 
+// Author: Benjamin Krepp (bkrepp@ctps.org)
+//         Data Resources Group
+//         Central Transportation Planning Staff
+//         Boston Region Metropolitan Planning Organization
+//         10 Park Plaza, Suite 2150
+//         Boston, MA 02116-3968
+ 
 var CONFIG = {  'i93_sr3'   :   {   'defaultRoute'              : true,
                                     'routeLabel'                : 'I-93 / SR-3',
                                     'route'                     : 'i93_sr3',
@@ -80,7 +90,7 @@ var CONFIG = {  'i93_sr3'   :   {   'defaultRoute'              : true,
                                 }
 }; // CONFIG
 
-var currentRoute = null;
+var currentRoute = CONFIG['i93_sr3'];
 
 var geojsonURL = 'data/geojson/roadsegments.geojson';
 
@@ -108,8 +118,7 @@ var lineColorPalette = { 'primary' : '#f5831a', 'secondary' : '#0066b4' };
 var intervalTimer;
 
 // Scales for width of SVG <line>s
-// Upper bound of scale domains is just a placeholder;
-// these values are adjusted when app initializes
+// Upper bound of scale domains are placeholders; these values are adjusted when a route is selected.
 var widthPalettes = {
     'absolute': {  
                     'awdt'  :   d3.scaleLinear()
@@ -214,7 +223,7 @@ function scrollHandler(e) {
     return;
 } // scrollHandler()
 
-// *** EXECUTION BEGINS HERE ***
+// Execution begins here:
 $(document).ready(function() {
     // Populate combo box of routes
     var route;
@@ -387,6 +396,7 @@ function generateViz(error, results) {
     });
     
     // Prep tabular (CSV) volume data loaded for use in app
+    // This routine currently has hard-wired assumptions about the possible years of data that may be found in the input
     function cleanupCsvRec(rec) {
         var tmp1, tmp2;
         rec.x1 = +rec.x1;
@@ -398,11 +408,12 @@ function generateViz(error, results) {
         rec.yr_1999 = +rec.yr_1999;
         rec.yr_2010 = +rec.yr_2010;
         rec.yr_2018 = +rec.yr_2018;
-        // Split 'description' field into 3 parts
+        // Split 'description' field into 3 parts        
         tmp1 = rec.description.split('|');
         rec.description = tmp1[0].trim();
         rec.description2 = (tmp1.length > 1) ? tmp1[1].trim() : '';
         rec.description3 = (tmp1.length === 3) ? tmp1[2].trim() : '';
+        
         // Add 'year_restriction' field
         if (rec.yr_1999 === 1 && rec.yr_2010 === 0) {
             tmp2 = 'yr_1999_only';
@@ -410,10 +421,41 @@ function generateViz(error, results) {
             tmp2 = 'yr_2010_only';
         } else {
             tmp2 = 'yr_restriction_none';
-        }
+        }       
         rec.year_restriction = tmp2;
-        // 1999 data
-        rec.awdt_1999 = +rec.awdt_1999;
+        
+        // NOTE: All routes for which we currently have data have data for 2010.
+        //       Currently, we only have 1999 and 2018 data for I-93/SR3.
+        //       The code below is, obviously, a non-generic "placeholder" implementation.
+        if (currentRoute.route === 'i93_sr3') {       
+            // 1999 data
+            rec.awdt_1999 = +rec.awdt_1999;
+             // 2018 data
+            rec.awdt_2018 = +rec.awdt_2018;
+            rec['peak_2018_6_to_7_am']  = +rec['peak_2018_6_to_7_am'];
+            rec['peak_2018_7_to_8_am']  = +rec['peak_2018_7_to_8_am'];
+            rec['peak_2018_8_to_9_am']  = +rec['peak_2018_8_to_9_am'];
+            rec['cum_2018_6_to_9_am']   = +rec['cum_2018_6_to_9_am'];
+            rec['peak_2018_9_to_10_am'] = +rec['peak_2018_9_to_10_am'];
+            rec['peak_2018_3_to_4_pm']  = +rec['peak_2018_3_to_4_pm'];
+            rec['peak_2018_4_to_5_pm']  = +rec['peak_2018_4_to_5_pm'];
+            rec['peak_2018_5_to_6_pm']  = +rec['peak_2018_5_to_6_pm'];
+            rec['cum_2018_3_to_6_pm']   = +rec['cum_2018_3_to_6_pm'];
+            rec['peak_2018_6_to_7_pm']  = +rec['peak_2018_6_to_7_pm'];   
+        } else {
+            rec.awdt_1999 = null;
+            rec.awdt_2018 = null;
+            rec['peak_2018_6_to_7_am']  = null;
+            rec['peak_2018_7_to_8_am']  = null;
+            rec['peak_2018_8_to_9_am']  = null;
+            rec['cum_2018_6_to_9_am']  = null;
+            rec['peak_2018_9_to_10_am'] = null;
+            rec['peak_2018_3_to_4_pm']  = null;
+            rec['peak_2018_4_to_5_pm']  = null;
+            rec['peak_2018_5_to_6_pm']  = null;
+            rec['cum_2018_3_to_6_pm']   = null;
+            rec['peak_2018_6_to_7_pm']  = null         
+        }            
         // 2010 data
         rec.awdt_2010 = +rec.awdt_2010;
         rec['peak_2010_6_to_7_am']  = +rec['peak_2010_6_to_7_am'];
@@ -425,19 +467,7 @@ function generateViz(error, results) {
         rec['peak_2010_4_to_5_pm']  = +rec['peak_2010_4_to_5_pm'];
         rec['peak_2010_5_to_6_pm']  = +rec['peak_2010_5_to_6_pm'];
         rec['cum_2010_3_to_6_pm']   = +rec['cum_2010_3_to_6_pm'];
-        rec['peak_2010_6_to_7_pm']  = +rec['peak_2010_6_to_7_pm']
-        // 2018 data
-        rec.awdt_2018 = +rec.awdt_2018;
-        rec['peak_2018_6_to_7_am']  = +rec['peak_2018_6_to_7_am'];
-        rec['peak_2018_7_to_8_am']  = +rec['peak_2018_7_to_8_am'];
-        rec['peak_2018_8_to_9_am']  = +rec['peak_2018_8_to_9_am'];
-        rec['cum_2018_6_to_9_am']   = +rec['cum_2018_6_to_9_am'];
-        rec['peak_2018_9_to_10_am'] = +rec['peak_2018_9_to_10_am'];
-        rec['peak_2018_3_to_4_pm']  = +rec['peak_2018_3_to_4_pm'];
-        rec['peak_2018_4_to_5_pm']  = +rec['peak_2018_4_to_5_pm'];
-        rec['peak_2018_5_to_6_pm']  = +rec['peak_2018_5_to_6_pm'];
-        rec['cum_2018_3_to_6_pm']   = +rec['cum_2018_3_to_6_pm'];
-        rec['peak_2018_6_to_7_pm']  = +rec['peak_2018_6_to_7_pm'];   
+        rec['peak_2010_6_to_7_pm']  = +rec['peak_2010_6_to_7_pm'];  
     } // cleanupCsvRec()
 
     DATA.secondaryDir_data.forEach(cleanupCsvRec);
@@ -708,7 +738,7 @@ function generateViz(error, results) {
 } // generateViz()
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
-// generateAwdtViz - helper function to generateViz - CURRENTLY NOT CALLED
+// generateAwdtViz - helper function to generateViz
 //
 // Initialize machinery for the 'awdt comparison' view:
 //      1. SVG wireframes
