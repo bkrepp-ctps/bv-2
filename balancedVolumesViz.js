@@ -226,7 +226,6 @@ function scrollHandler(e) {
 // Execution begins here:
 $(document).ready(function() {
     // Populate combo box of routes
-    var route;
     for (prop in CONFIG) {
         $("#select_route").append(
             $("<option />")
@@ -243,6 +242,7 @@ $(document).ready(function() {
     });
       
     $('#main_view_wrapper').show();
+    $('#gfx_wrapper_main_ebwb').hide();
     $('#sb_lanes,#nb_lanes,#eb_lanes,#wb_lanes').hide();
     $('#awdt_comp_view_wrapper').hide();
     $('#peak_comp_view_wrapper').hide();
@@ -255,16 +255,31 @@ $(document).ready(function() {
             $('#awdt_comp_view_wrapper').hide(); 
             $('#peak_comp_view_wrapper').hide();
             $('#main_view_wrapper').show();
+            if (currentRoute.orientation === 'nbsb') {
+                $('#gfx_wrapper_main_ebwb').hide();
+            } else {
+               $('#gfx_wrapper_main_nbsb').hide();    
+            }
             break;
         case 'select_awdt_comp_view':
             $('#main_view_wrapper').hide();
             $('#peak_comp_view_wrapper').hide();
             $('#awdt_comp_view_wrapper').show();
+            if (currentRoute.orientation === 'nbsb') {
+                $('#gfx_wrapper_awdt_ebwb').hide();
+            } else {
+                $('#gfx_wrapper_awdt_nbsb').hide();    
+            }
             break;
         case 'select_peak_comp_view':
             $('#main_view_wrapper').hide();
             $('#awdt_comp_view_wrapper').hide();
             $('#peak_comp_view_wrapper').show();
+            if (currentRoute.orientation === 'nbsb') {
+                $('#gfx_wrapper_peak_ebwb').hide();    
+            } else {
+                 $('#gfx_wrapper_peak_nbsb').hide();     
+            }            
             break;
         default:
             break;
@@ -272,9 +287,22 @@ $(document).ready(function() {
     });
     
     // Arm event handler for select_route combo box
+    // When the user switches to a new/different route, the selected view resets to the 'main' view;
+    // Among other things, this allows the Google Map to initialize properly.
     $('#select_route').change(function(e) {
-        var route = $("#select_route option:selected").attr('value');
+        var route = $("#select_route option:selected").attr('value');        
         currentRoute = CONFIG[route];
+        if (currentRoute.orientation === 'nbsb') {
+            $('#gfx_wrapper_main_ebwb,#gfx_wrapper_awdt_ebwb,#gfx_wrapper_peak_ebwb').hide();   
+            $('#gfx_wrapper_main_nbsb,#gfx_wrapper_awdt_nbsb,#gfx_wrapper_peak_nbsb').show();  
+        } else {
+            $('#gfx_wrapper_main_nbsb,#gfx_wrapper_awdt_nbsb,#gfx_wrapper_peak_nbsb').hide(); 
+            $('#gfx_wrapper_main_ebwb,#gfx_wrapper_awdt_ebwb,#gfx_wrapper_peak_ebwb').show();             
+        }
+        $('#awdt_comp_view_wrapper').hide(); 
+        $('#peak_comp_view_wrapper').hide();
+        $('#main_view_wrapper').show();
+        $('#select_main_view').prop('checked', true);
         initializeForRoute(currentRoute.route);        
     });
     
@@ -301,10 +329,21 @@ $(document).ready(function() {
 // "generateViz" when the AJAX requests for CSV data have completed (or failed).
 // 
 function initializeForRoute(route) {
-    // Populate combo boxes for 'AWDT comparison' and 'peak hours' views for the current route;
-    // First, we must remove any options that are present (i.e., from last selected route)
-    $('#awdt_select_year_1,#awdt_select_year_2').empty();
     var i;
+    // Populate 'select_year' combo box in main view for the current route
+    // First, we must remove any options that are present (i.e., from last selected route)
+    $('#select_year').empty();
+    for (i = 0; i < currentRoute.years.length; i++) {
+        $('#select_year').append(
+            $("<option />")
+                .val(currentRoute.years[i])
+                .text(currentRoute.years[i])
+                .prop('selected', currentRoute.years[i] === currentRoute.main_year_default)
+        );                
+    }
+    
+    // Populate combo boxe for 'AWDT comparison' view for the current route
+    $('#awdt_select_year_1,#awdt_select_year_2').empty();
     for (i = 0; i < currentRoute.years_awdt.length; i++) {
         $('#awdt_select_year_1').append(
             $("<option />")
@@ -319,7 +358,7 @@ function initializeForRoute(route) {
                 .prop('selected', currentRoute.years_awdt[i] === currentRoute.awdt_year_2_default)
         );        
     }
-    
+    // Populate combo box for 'peak hours' view for the current route;
     $('#peak_select_direction').empty();
     var directions = (currentRoute.orientation === 'nbsb') ? [ 'Northbound', 'Southbound' ] : [ 'Eastbound', 'Westbound' ];
     for (i = 0; i < directions.length; i++) {
@@ -329,14 +368,8 @@ function initializeForRoute(route) {
                 .text(directions[i])
                 .prop('selected', i === 0)
         );
-    }    
- 
-    // *** TEMP ***
-    if (currentRoute.route !== 'i93_sr3' ) {
-        var s = 'Testing generation of visualization for ' + currentRoute.route;
-        console.log(s);
-    }  
-    
+    }     
+    // Load the data and generate the viz'es
     var q = d3.queue()
                 .defer(d3.csv, CONFIG[route].csvWireframe_secondaryDir)
                 .defer(d3.csv, CONFIG[route].csvWireframe_primaryDir)
@@ -384,12 +417,12 @@ function generateViz(error, results) {
 
     // Prep GeoJSON data for the currently selected route for use in app
     //
-    // 2010 'backbone' route - both NB and SB
+    // 2010 'backbone' route - both primary and secondary directions
     DATA.backbone_2010 = Object.assign({}, DATA.geojsonCurrentRoute);
     DATA.backbone_2010.features = _.filter(DATA.backbone_2010.features, function(rec) { 
         return rec.properties['yr_2010'] === 1 && rec.properties['data_id'].contains('hov') == false;
     });
-     // 1999 'backbone' route - both NB and SB
+     // 1999 'backbone' route - both primary and secondary directions
     DATA.backbone_1999 = Object.assign({}, DATA.geojsonCurrentRoute);
     DATA.backbone_1999.features = _.filter(DATA.backbone_1999.features, function(rec) { 
         return rec.properties['yr_1999'] === 1 && rec.properties['data_id'].contains('hov') == false;
@@ -426,7 +459,7 @@ function generateViz(error, results) {
         
         // NOTE: All routes for which we currently have data have data for 2010.
         //       Currently, we only have 1999 and 2018 data for I-93/SR3.
-        //       The code below is, obviously, a non-generic "placeholder" implementation.
+        //       The code below is, obviously, a non-generic "placeholder" for the time being.
         if (currentRoute.route === 'i93_sr3') {       
             // 1999 data
             rec.awdt_1999 = +rec.awdt_1999;
@@ -575,12 +608,20 @@ function generateViz(error, results) {
                         }      
     }; // handlers{}
     
-    // *** TBD: Genericize this to also handle EB/WB routes
-    function setMainCaption(route, year) {
-        var tmp = route + "&nbsp;-&nbsp;" + year;
-        $('#central_caption_nbsb').html(tmp);
+    function setMainCaption(currentRoute, year) {
+        var tmp = currentRoute.routeLabel + "&nbsp;-&nbsp;" + year;
+        var captionDivId = (currentRoute.orientation === 'nbsb') ? 'central_caption_nbsb' : 'central_caption_ebwb';
+        $('#' + captionDivId).html(tmp);
     } // setMainCaption()
     
+    setMainCaption(currentRoute, $("#select_year option:selected").attr('value'));
+    
+    // Clear <div>s containing SVG elements; the <div>s containing the GoogleMaps are cleared in initMap
+    $('#sb_lanes,#sb_viz,#nb_viz,#nb_lanes,#eb_lanes,#eb_viz,#wb_viz,#wb_lanes').html('');
+    $('#sb_viz_yr_1,#sb_viz_yr_2,#nb_viz_yr_1,#nb_viz_yr_2,#eb_viz_yr_1,#eb_viz_yr_2,#wb_viz_yr_1,#wb_viz_yr_2').html('');
+    $('#peak_viz_nbsb_hr_1,#peak_viz_nbsb_hr_2,#peak_viz_nbsb_hr_3,#peak_viz_nbsb_sum').html('');
+    $('#peak_viz_ebwb_hr_1,#peak_viz_ebwb_hr_2,#peak_viz_ebwb_hr_3,#peak_viz_ebwb_sum').html('');
+     
     // Prep CSV data for lanes diagrams
     //
     function cleanupCsvLanesRec(rec) {
@@ -660,7 +701,7 @@ function generateViz(error, results) {
         metric = $("#select_metric option:selected").attr('value');
         symbolizeSvgWireframe(VIZ.secondaryDir, currentRoute.mainViz_secondaryDir_div, metric, year, lineColorPalette.secondary);
         symbolizeSvgWireframe(VIZ.primaryDir, currentRoute.mainViz_primaryDir_div, metric, year, lineColorPalette.primary);       
-        setMainCaption("I-93/SR-3", year);
+        setMainCaption(currentRoute, year);
     });
     
     // (3b) Arm event handler for select_metric combo box
@@ -674,7 +715,7 @@ function generateViz(error, results) {
         }       
         symbolizeSvgWireframe(VIZ.secondaryDir, currentRoute.mainViz_secondaryDir_div, metric, year, lineColorPalette.secondary);
         symbolizeSvgWireframe(VIZ.primaryDir, currentRoute.mainViz_primaryDir_div, metric, year, lineColorPalette.primary);   
-        setMainCaption("I-93/SR-3", year);        
+        setMainCaption(currentRoute, year);        
      });
     
     // (3c) On-change handler for sync_scrollbars checkbox
@@ -917,7 +958,6 @@ function generatePeakHoursViz() {
         symbolizeHourlyComparison(period, direction);
     });
 } // generatePeakHoursViz()
-
 
 // generateSvgWireframe
 //
