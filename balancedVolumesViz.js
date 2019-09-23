@@ -582,7 +582,7 @@ function generateViz(error, results) {
                             map.fitBounds(googleBounds);                        
         },
         'mouseover' :   function(d,i) {
-                            var tmpstr, metric, metricTxt, year, yearTxt, attrName, backgroundColor;
+                            var tmpstr, metric, metricTxt, year, yearTxt, attrName, color;
                             tmpstr = d.description + '<br>' + d.description2 + '<br>';
                             tmpstr += (d.description3 !== '') ? d.description3 + '<br>' : '';
                             metric = $("#select_metric option:selected").attr('value');
@@ -592,14 +592,14 @@ function generateViz(error, results) {
                             attrName = getAttrName(metric,year); 
                             tmpstr += yearTxt + ' ' + metricTxt + ': ' + d[attrName].toLocaleString();
                             tmpstr += '<br>'+ 'Number of lanes: ' + d.nlanes + '<br>';
-                            backgroundColor = (primaryDirectionP(d.backbone_rte)) ? lineColorPalette.primary : lineColorPalette.secondary;                 
+                            color = (primaryDirectionP(d.backbone_rte)) ? lineColorPalette.primary : lineColorPalette.secondary;                 
                             tooltipDiv.transition()		
                                 .duration(200)		
                                 .style("opacity", .9);                              
                             tooltipDiv.html(tmpstr)
-                                .style("background", backgroundColor)
+                                .style("border-color", color)
                                 .style("left", (d3.event.pageX) + "px")		
-                                .style("top", (d3.event.pageY - 28) + "px");            
+                                .style("top", (d3.event.pageY - 28) + "px");           
                         },
         'mouseout'  :   function(d,i) {
                             tooltipDiv.transition()		
