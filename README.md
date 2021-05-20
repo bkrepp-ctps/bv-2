@@ -1,7 +1,7 @@
 # bv-2
 Repository for major version 2 of the balanced volumes visualization app, supporting multiple routes, and routes with both NB/SB and EB/WB orientation.
 
-It is dervived from the work in the (original Balanced Volumes project repository)[https://github.com/bkrepp-ctps/balancedVolumes ]. 
+It is dervived from the work in the [original Balanced Volumes project repository](https://github.com/bkrepp-ctps/balancedVolumes). 
 
 The original repository was devoted __exclusively__ to the visualizations of balanced traffic volume data for I-93 and Massachusetts SR-3
 within the boundary of the Boston Region Metropolitan Planning Organization. The code and data in the original repository were developed
