@@ -1,7 +1,8 @@
 // Visualization of balanced volume data for limited-access (express) highways in the Boston Region MPO area.
-// Developed as part of UPWP Project #13291 of the Boston Region Metropolitan Planning Organization for Federal Fiscal Year 2019.
+// The first version of this application was developed as part of UPWP Project #13291 of the 
+// Boston Region Metropolitan Planning Organization for Federal Fiscal Year 2019.
 //
-// This is a draft version that supports both NB/SB and EB/WB routes.
+// This is a development version that supports both NB/SB and EB/WB routes.
 // 
 // Author: Benjamin Krepp (bkrepp@ctps.org)
 //         Data Resources Group
@@ -42,6 +43,7 @@ var CONFIG = {  'i93_sr3'   :   {   'defaultRoute'              : true,
                                     'lanes_primaryDir_div'      : 'nb_lanes',
                                     'lanes_secondaryDir_div'    : 'sb_lanes',
                                    
+                                    'geojsonURL' : 'data/geojson/i93_and_sr3.geojson', 
                                     'csvWireframe_primaryDir'   : 'data/csv/i93_sr3_nb_wireframe_and_volumes.csv',
                                     'csvWireframe_secondaryDir' : 'data/csv/i93_sr3_sb_wireframe_and_volumes.csv',
                                     'csvLanes_primaryDir'       : 'data/csv/i93_sr3_nb_LANES_2010.csv',
@@ -49,6 +51,47 @@ var CONFIG = {  'i93_sr3'   :   {   'defaultRoute'              : true,
                                     'csvTownBoundaries_primaryDir'      : 'data/csv/i93_sr3_nb_TOWNS.csv',
                                     'csvTownBoundaries_secondaryDir'    : 'data/csv/i93_sr3_sb_TOWNS.csv'  
                                 },
+                                
+                 'us1'     :   {   'defaultRoute'              : false,
+                                    'routeLabel'                : 'US-1',
+                                    'route'                     : 'us1',
+                                    'orientation'               : 'nbsb',
+                                    'primaryDir'                : 'Northbound',
+                                    'primaryDirAbbrev'          : 'nb',
+                                    'secondaryDir'              : 'Southbound',
+                                    'secondaryDirAbbrev'        : 'sb',                                           
+                                    'years'                     : [ 2007, 2019 ],
+                                    'main_year_default'         : 2019,
+                                    'years_awdt'                : [ 2007, 2019 ],
+                                    'awdt_year_1_default'       : 2019,
+                                    'awdt_year_2_default'       : 2007,                                                                  
+                                    'years_peak_hours'          : [ 2019 ], 
+                                    'peak_view_year_default'    : 2019,
+                                    
+                                    'mainViz_primaryDir_div'    : 'nb_viz',
+                                    'mainViz_secondaryDir_div'  : 'sb_viz',
+                                    'mapDiv'                    : 'map_nbsb',
+                                    
+                                    'awdtViz_primaryDir_yr_1_div'   : 'nb_viz_yr_1',
+                                    'awdtViz_primaryDir_yr_2_div'   : 'nb_viz_yr_2',
+                                    'awdtViz_secondaryDir_yr_1_div' : 'sb_viz_yr_1',
+                                    'awdtViz_secondaryDir_yr_2_div' : 'sb_viz_yr_2',                                     
+                                    'peakViz_hr_1_div'          : 'peak_viz_nbsb_hr_1',
+                                    'peakViz_hr_2_div'          : 'peak_viz_nbsb_hr_2',       
+                                    'peakViz_hr_3_div'          : 'peak_viz_nbsb_hr_3',   
+                                    'peakViz_sum_div'           : 'peak_viz_nbsb_sum',                                    
+                                    'lanes_primaryDir_div'      : 'nb_lanes',
+                                    'lanes_secondaryDir_div'    : 'sb_lanes',                                   
+                                    
+                                    'geojsonURL' : 'data/geojson/us1.geojson', 
+                                    'csvWireframe_primaryDir'   : 'data/csv/us1_nb_wireframe_and_volumes.csv',
+                                    'csvWireframe_secondaryDir' : 'data/csv/us1_sb_wireframe_and_volumes.csv',
+                                    'csvLanes_primaryDir'       : 'data/csv/us1_nb_LANES_2010.csv',
+                                    'csvLanes_secondaryDir'     : 'data/csv/us1_sb_LANES_2010.csv',
+                                    'csvTownBoundaries_primaryDir'      : 'data/csv/us1_nb_TOWNS.csv',
+                                    'csvTownBoundaries_secondaryDir'    : 'data/csv/us1_sb_TOWNS.csv' 
+                                }, 
+                                
                 'i90'       :   {   'defaultRoute'              : false,
                                     'routeLabel'                : 'I-90',
                                     'route'                     : 'i90',
@@ -65,7 +108,7 @@ var CONFIG = {  'i93_sr3'   :   {   'defaultRoute'              : true,
                                     'years_peak_hours'          : [ 2010 ], 
                                     'peak_view_year_default'    : 2010,
                                     
-                                    'mainViz_primaryDir_div'    : 'eb_viz',
+                                    'mainViz_primaryDir_div'    : 'eb_viz', 
                                     'mainViz_secondaryDir_div'  : 'wb_viz',
                                     'mapDiv'                    : 'map_ebwb',
                                     
@@ -79,20 +122,18 @@ var CONFIG = {  'i93_sr3'   :   {   'defaultRoute'              : true,
                                     'peakViz_sum_div'           : 'peak_viz_ebwb_sum',                                    
                                     'lanes_primaryDir_div'      : 'eb_lanes',
                                     'lanes_secondaryDir_div'    : 'wb_lanes',                                   
-                                                                       
+                                    
+                                    'geojsonURL' : 'data/geojson/i90.geojson',                                     
                                     'csvWireframe_primaryDir'   : 'data/csv/i90_eb_wireframe_and_volumes.csv',
                                     'csvWireframe_secondaryDir' : 'data/csv/i90_wb_wireframe_and_volumes.csv',
                                     'csvLanes_primaryDir'       : 'data/csv/i90_eb_LANES_2010.csv',
                                     'csvLanes_secondaryDir'     : 'data/csv/i90_wb_LANES_2010.csv',
                                     'csvTownBoundaries_primaryDir'      : 'data/csv/i90_eb_TOWNS.csv',
                                     'csvTownBoundaries_secondaryDir'    : 'data/csv/i90_wb_TOWNS.csv' 
-                                    
                                 }
 }; // CONFIG
 
 var currentRoute = CONFIG['i93_sr3'];
-
-var geojsonURL = 'data/geojson/roadsegments.geojson';
 
 // Pseudo-const "var" for NO_DATA flag value
 var NO_DATA = -9999;
@@ -306,7 +347,13 @@ $(document).ready(function() {
         initializeForRoute(currentRoute.route);        
     });
     
-    // Load GeoJSON with spatial data, and initialize for default "current" route
+    // Initialize for default "current" route
+    var route = $("#select_route option:selected").attr('value');
+    currentRoute = CONFIG[route];
+    initializeForRoute(currentRoute.route);
+
+    //  *** old code below this point ***
+/*
     var q = d3.queue()
                 .defer(d3.json, geojsonURL)
                 .awaitAll(function(error, results) {
@@ -319,6 +366,7 @@ $(document).ready(function() {
                     currentRoute = CONFIG[route];
                     initializeForRoute(currentRoute.route);
         });
+*/
 }); // document ready event handler
 
 // initializeForRoute()
@@ -326,7 +374,7 @@ $(document).ready(function() {
 // parameter: route - symbolic name of route for which we are to initizlize the app
 //
 // This function kicks-off loading the CSV data for the selected route, and causes
-// "generateViz" when the AJAX requests for CSV data have completed (or failed).
+// "generateViz" when the AJAX requests for CSV and GeoJSON data have completed (or failed).
 // 
 function initializeForRoute(route) {
     var i;
@@ -369,6 +417,7 @@ function initializeForRoute(route) {
                 .prop('selected', i === 0)
         );
     }     
+    
     // Load the data and generate the viz'es
     var q = d3.queue()
                 .defer(d3.csv, CONFIG[route].csvWireframe_secondaryDir)
@@ -377,6 +426,7 @@ function initializeForRoute(route) {
                 .defer(d3.csv, CONFIG[route].csvLanes_primaryDir)
                 .defer(d3.csv, CONFIG[route].csvTownBoundaries_secondaryDir)
                 .defer(d3.csv, CONFIG[route].csvTownBoundaries_primaryDir)
+                .defer(d3.json, CONFIG[route].geojsonURL)
                 .awaitAll(generateViz);    
 } // initializeForRoute()
 
@@ -398,15 +448,10 @@ function initializeForRoute(route) {
 //
 function generateViz(error, results) {
     if (error != null) {
-        alert('One or more requests to load CSV data for route ' + CONFIG[currentRoute].routeLabel + ' failed. Exiting application.');
+        alert('One or more requests to load CSV or GesoJSON data for route ' + CONFIG[currentRoute].routeLabel + ' failed. Exiting application.');
         return;         
     } 
    
-    // Extract subset of the GeoJSON data for the currently selected route 
-    DATA.geojsonCurrentRoute = Object.assign({}, DATA.geojsonAll);
-    DATA.geojsonCurrentRoute.features = _.filter(DATA.geojsonCurrentRoute.features, function(rec) {
-            return rec.properties['backbone_rte'].startsWith(currentRoute.route);
-    });
     
     DATA.secondaryDir_data = results[0];
     DATA.primaryDir_data = results[1];
@@ -414,6 +459,8 @@ function generateViz(error, results) {
     DATA.primaryDir_lanes = results[3];
     DATA.secondaryDir_towns = results[4];
     DATA.primaryDir_towns = results[5];
+    DATA.geojsonCurrentRoute = results[6];   // the GeoJSON data for the currently selected route
+
 
     // Prep GeoJSON data for the currently selected route for use in app
     //
