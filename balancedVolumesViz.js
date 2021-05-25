@@ -90,8 +90,9 @@ var CONFIG = {  'i93_sr3'   :   {   'defaultRoute'              : true,
                                     'csvLanes_secondaryDir'     : 'data/csv/us1_sb_LANES_2010.csv',
                                     'csvTownBoundaries_primaryDir'      : 'data/csv/us1_nb_TOWNS.csv',
                                     'csvTownBoundaries_secondaryDir'    : 'data/csv/us1_sb_TOWNS.csv' 
-                                }, 
-                                
+                                }
+                /*                
+                                ,               
                 'i90'       :   {   'defaultRoute'              : false,
                                     'routeLabel'                : 'I-90',
                                     'route'                     : 'i90',
@@ -131,6 +132,7 @@ var CONFIG = {  'i93_sr3'   :   {   'defaultRoute'              : true,
                                     'csvTownBoundaries_primaryDir'      : 'data/csv/i90_eb_TOWNS.csv',
                                     'csvTownBoundaries_secondaryDir'    : 'data/csv/i90_wb_TOWNS.csv' 
                                 }
+                */
 }; // CONFIG
 
 var currentRoute = CONFIG['i93_sr3'];
@@ -476,7 +478,8 @@ function generateViz(error, results) {
     });
     
     // Prep tabular (CSV) volume data loaded for use in app
-    // This routine currently has hard-wired assumptions about the possible years of data that may be found in the input
+    // This routine currently has hard-wired knowledge of the years for which data for each route is available in the input CSV.
+    // TBD: Genericize this, drive it from config parameters.
     function cleanupCsvRec(rec) {
         var tmp1, tmp2;
         rec.x1 = +rec.x1;
@@ -485,15 +488,16 @@ function generateViz(error, results) {
         rec.y2 = +rec.y2;   
         rec.showdesc = +rec.showdesc;
         rec.nlanes = +rec.nlanes;
-        rec.yr_1999 = +rec.yr_1999;
-        rec.yr_2010 = +rec.yr_2010;
-        rec.yr_2018 = +rec.yr_2018;
         // Split 'description' field into 3 parts        
         tmp1 = rec.description.split('|');
         rec.description = tmp1[0].trim();
         rec.description2 = (tmp1.length > 1) ? tmp1[1].trim() : '';
-        rec.description3 = (tmp1.length === 3) ? tmp1[2].trim() : '';
+        rec.description3 = (tmp1.length === 3) ? tmp1[2].trim() : '';    
         
+        rec.yr_1999 = +rec.yr_1999;
+        rec.yr_2010 = +rec.yr_2010;
+        rec.yr_2018 = +rec.yr_2018;  // Potential issue for US-1
+
         // Add 'year_restriction' field
         if (rec.yr_1999 === 1 && rec.yr_2010 === 0) {
             tmp2 = 'yr_1999_only';
@@ -508,9 +512,9 @@ function generateViz(error, results) {
         //       Currently, we only have 1999 and 2018 data for I-93/SR3.
         //       The code below is, obviously, a non-generic "placeholder" for the time being.
         if (currentRoute.route === 'i93_sr3') {       
-            // 1999 data
+            // 1999 data - AWDT only
             rec.awdt_1999 = +rec.awdt_1999;
-             // 2018 data
+             // 2018 data - AWDT and  hourly
             rec.awdt_2018 = +rec.awdt_2018;
             rec['peak_2018_6_to_7_am']  = +rec['peak_2018_6_to_7_am'];
             rec['peak_2018_7_to_8_am']  = +rec['peak_2018_7_to_8_am'];
@@ -522,62 +526,127 @@ function generateViz(error, results) {
             rec['peak_2018_5_to_6_pm']  = +rec['peak_2018_5_to_6_pm'];
             rec['cum_2018_3_to_6_pm']   = +rec['cum_2018_3_to_6_pm'];
             rec['peak_2018_6_to_7_pm']  = +rec['peak_2018_6_to_7_pm'];   
+             // 2010 data - AWDT and  hourly
+            rec.awdt_2010 = +rec.awdt_2010;
+            rec['peak_2010_6_to_7_am']  = +rec['peak_2010_6_to_7_am'];
+            rec['peak_2010_7_to_8_am']  = +rec['peak_2010_7_to_8_am'];
+            rec['peak_2010_8_to_9_am']  = +rec['peak_2010_8_to_9_am'];
+            rec['cum_2010_6_to_9_am']   = +rec['cum_2010_6_to_9_am'];
+            rec['peak_2010_9_to_10_am'] = +rec['peak_2010_9_to_10_am'];
+            rec['peak_2010_3_to_4_pm']  = +rec['peak_2010_3_to_4_pm'];
+            rec['peak_2010_4_to_5_pm']  = +rec['peak_2010_4_to_5_pm'];
+            rec['peak_2010_5_to_6_pm']  = +rec['peak_2010_5_to_6_pm'];
+            rec['cum_2010_3_to_6_pm']   = +rec['cum_2010_3_to_6_pm'];
+            rec['peak_2010_6_to_7_pm']  = +rec['peak_2010_6_to_7_pm'];            
+        } else if (currentRoute.route === 'us1') {
+            // 1997 data - AWDT only
+            rec.awdt_1997 = +rec.awdt_1999;  
+            // 2019 - AWDT and hourly
+            rec['peak_2019_6_to_7_am']  = +rec['peak_2019_6_to_7_am'];
+            rec['peak_2019_7_to_8_am']  = +rec['peak_2019_7_to_8_am'];
+            rec['peak_2019_8_to_9_am']  = +rec['peak_2019_8_to_9_am'];
+            rec['cum_2019_6_to_9_am']   = +rec['cum_2019_6_to_9_am'];
+            rec['peak_2019_9_to_10_am'] = +rec['peak_2019_9_to_10_am'];
+            rec['peak_2019_3_to_4_pm']  = +rec['peak_2019_3_to_4_pm'];
+            rec['peak_2019_4_to_5_pm']  = +rec['peak_2019_4_to_5_pm'];
+            rec['peak_2019_5_to_6_pm']  = +rec['peak_2019_5_to_6_pm'];
+            rec['cum_2019_3_to_6_pm']   = +rec['cum_2019_3_to_6_pm'];
+            rec['peak_2019_6_to_7_pm']  = +rec['peak_2019_6_to_7_pm']; 
+        } else if (currentRoute.route === 'i90') {
+            // 1999 - AWDT only
+            rec.awdt_1999 = +rec.awdt_1999; 
+            // 2010 - AWDT and hourly
+            rec['peak_2010_6_to_7_am']  = +rec['peak_2010_6_to_7_am'];
+            rec['peak_2010_7_to_8_am']  = +rec['peak_2010_7_to_8_am'];
+            rec['peak_2010_8_to_9_am']  = +rec['peak_2010_8_to_9_am'];
+            rec['cum_2010_6_to_9_am']   = +rec['cum_2010_6_to_9_am'];
+            rec['peak_2010_9_to_10_am'] = +rec['peak_2010_9_to_10_am'];
+            rec['peak_2010_3_to_4_pm']  = +rec['peak_2010_3_to_4_pm'];
+            rec['peak_2010_4_to_5_pm']  = +rec['peak_2010_4_to_5_pm'];
+            rec['peak_2010_5_to_6_pm']  = +rec['peak_2010_5_to_6_pm'];
+            rec['cum_2010_3_to_6_pm']   = +rec['cum_2010_3_to_6_pm'];
+            rec['peak_2010_6_to_7_pm']  = +rec['peak_2010_6_to_7_pm'];  
         } else {
-            rec.awdt_1999 = null;
-            rec.awdt_2018 = null;
-            rec['peak_2018_6_to_7_am']  = null;
-            rec['peak_2018_7_to_8_am']  = null;
-            rec['peak_2018_8_to_9_am']  = null;
-            rec['cum_2018_6_to_9_am']  = null;
-            rec['peak_2018_9_to_10_am'] = null;
-            rec['peak_2018_3_to_4_pm']  = null;
-            rec['peak_2018_4_to_5_pm']  = null;
-            rec['peak_2018_5_to_6_pm']  = null;
-            rec['cum_2018_3_to_6_pm']   = null;
-            rec['peak_2018_6_to_7_pm']  = null         
-        }            
-        // 2010 data
-        rec.awdt_2010 = +rec.awdt_2010;
-        rec['peak_2010_6_to_7_am']  = +rec['peak_2010_6_to_7_am'];
-        rec['peak_2010_7_to_8_am']  = +rec['peak_2010_7_to_8_am'];
-        rec['peak_2010_8_to_9_am']  = +rec['peak_2010_8_to_9_am'];
-        rec['cum_2010_6_to_9_am']   = +rec['cum_2010_6_to_9_am'];
-        rec['peak_2010_9_to_10_am'] = +rec['peak_2010_9_to_10_am'];
-        rec['peak_2010_3_to_4_pm']  = +rec['peak_2010_3_to_4_pm'];
-        rec['peak_2010_4_to_5_pm']  = +rec['peak_2010_4_to_5_pm'];
-        rec['peak_2010_5_to_6_pm']  = +rec['peak_2010_5_to_6_pm'];
-        rec['cum_2010_3_to_6_pm']   = +rec['cum_2010_3_to_6_pm'];
-        rec['peak_2010_6_to_7_pm']  = +rec['peak_2010_6_to_7_pm'];  
+            alert('Unsupported route: ' + currentRoute + '.');
+        }             
     } // cleanupCsvRec()
 
     DATA.secondaryDir_data.forEach(cleanupCsvRec);
     DATA.primaryDir_data.forEach(cleanupCsvRec);    
 
-    // Determine the upper bound of domains of width scales ('widthPalettes');
-    var max_awdt = _.max([_.max(_.pluck(DATA.secondaryDir_data, 'awdt_1999')), _.max(_.pluck(DATA.secondaryDir_data, 'awdt_2010')), _.max(_.pluck(DATA.secondaryDir_data, 'awdt_2018')),
-                          _.max(_.pluck(DATA.primaryDir_data, 'awdt_1999')), _.max(_.pluck(DATA.primaryDir_data, 'awdt_2010')), _.max(_.pluck(DATA.primaryDir_data, 'awdt_2018'))]);
+    // Determine the upper bound of domains of width scales ('widthPalettes')
+    // 
+    // The following code, like the code above, needs to be rationalized and controlled by config option(s).
+    // For the time bieing, we *think* the brute-force method applied below due to how lodeash's _.pluck() function works.
+    // Fingers crossed...
+    
+    
+    var max_awdt = _.max([_.max(_.pluck(DATA.secondaryDir_data, 'awdt_1999')), 
+                                      _.max(_.pluck(DATA.secondaryDir_data, 'awdt_2010')), 
+                                      _.max(_.pluck(DATA.secondaryDir_data, 'awdt_2018')),
+                                      _.max(_.pluck(DATA.secondaryDir_data, 'awdt_2019')),
+                                      _.max(_.pluck(DATA.primaryDir_data, 'awdt_1999')), 
+                                      _.max(_.pluck(DATA.primaryDir_data, 'awdt_2010')), 
+                                      _.max(_.pluck(DATA.primaryDir_data, 'awdt_2018')),
+                                      _.max(_.pluck(DATA.primaryDir_data, 'awdt_2019')) ]);                              
     widthPalettes.absolute.awdt.domain([0, max_awdt]);
     
-    var max_hourly = _.max([_.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_6_to_7_am')), _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_7_to_8_am')), 
-                            _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_8_to_9_am')), _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_9_to_10_am')), 
-                            _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_3_to_4_pm')), _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_4_to_5_pm')), 
-                            _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_5_to_6_pm')), _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_6_to_7_pm')),                           
-                            _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_6_to_7_am')), _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_7_to_8_am')), 
-                            _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_8_to_9_am')), _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_9_to_10_am')), 
-                            _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_3_to_4_pm')), _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_4_to_5_pm')), 
-                            _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_5_to_6_pm')), _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_6_to_7_pm')),
-                            _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_6_to_7_am')), _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_7_to_8_am')), 
-                            _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_8_to_9_am')), _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_9_to_10_am')), 
-                            _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_3_to_4_pm')), _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_4_to_5_pm')), 
-                            _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_5_to_6_pm')), _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_6_to_7_pm')),                           
-                            _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_6_to_7_am')), _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_7_to_8_am')), 
-                            _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_8_to_9_am')), _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_9_to_10_am')), 
-                            _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_3_to_4_pm')), _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_4_to_5_pm')), 
-                            _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_5_to_6_pm')), _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_6_to_7_pm'))]);
-    widthPalettes.absolute.hourly.domain([0, max_hourly]);                        
-                            
-    var max_cum = _.max([_.max(_.pluck(DATA.secondaryDir_data, 'cum_2018_6_to_9_am')), _.max(_.pluck(DATA.secondaryDir_data, 'cum_2018_3_to_6_pm')),
-                         _.max(_.pluck(DATA.secondaryDir_data, 'cum_2010_6_to_9_am')), _.max(_.pluck(DATA.secondaryDir_data, 'cum_2010_3_to_6_pm'))]);
+    
+    var max_hourly = _.max([ _.max(_.pluck(DATA.secondaryDir_data, 'peak_2019_6_to_7_am')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2019_7_to_8_am')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2019_8_to_9_am')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2019_9_to_10_am')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2019_3_to_4_pm')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2019_4_to_5_pm')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2019_5_to_6_pm')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2019_6_to_7_pm')),                           
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2019_6_to_7_am')),
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2019_7_to_8_am')), 
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2019_8_to_9_am')), 
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2019_9_to_10_am')), 
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2019_3_to_4_pm')), 
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2019_4_to_5_pm')), 
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2019_5_to_6_pm')), 
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2019_6_to_7_pm')),
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_6_to_7_am')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_7_to_8_am')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_8_to_9_am')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_9_to_10_am')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_3_to_4_pm')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_4_to_5_pm')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_5_to_6_pm')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2018_6_to_7_pm')),                           
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_6_to_7_am')),
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_7_to_8_am')), 
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_8_to_9_am')), 
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_9_to_10_am')), 
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_3_to_4_pm')), 
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_4_to_5_pm')), 
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_5_to_6_pm')), 
+                                       _.max(_.pluck(DATA.primaryDir_data, 'peak_2018_6_to_7_pm')),
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_6_to_7_am')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_7_to_8_am')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_8_to_9_am')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_9_to_10_am')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_3_to_4_pm')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_4_to_5_pm')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_5_to_6_pm')), 
+                                       _.max(_.pluck(DATA.secondaryDir_data, 'peak_2010_6_to_7_pm')),                           
+                                      _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_6_to_7_am')), 
+                                      _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_7_to_8_am')), 
+                                      _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_8_to_9_am')), 
+                                      _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_9_to_10_am')), 
+                                      _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_3_to_4_pm')), 
+                                      _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_4_to_5_pm')), 
+                                     _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_5_to_6_pm')), 
+                                     _.max(_.pluck(DATA.primaryDir_data, 'peak_2010_6_to_7_pm'))]);
+    widthPalettes.absolute.hourly.domain([0, max_hourly]);       
+    
+    var max_cum = _.max([_.max(_.pluck(DATA.secondaryDir_data, 'cum_2019_6_to_9_am')),
+                                     _.max(_.pluck(DATA.secondaryDir_data, 'cum_2018_6_to_9_am')), 
+                                    _.max(_.pluck(DATA.secondaryDir_data, 'cum_2018_3_to_6_pm')),
+                                    _.max(_.pluck(DATA.secondaryDir_data, 'cum_2010_6_to_9_am')), 
+                                    _.max(_.pluck(DATA.secondaryDir_data, 'cum_2010_3_to_6_pm'))]);    
     widthPalettes.absolute.cum.domain([0, max_cum]);
     
     // Handlers for various events on the main SVG <line>-work (a.k.a. 'stick diagram')
