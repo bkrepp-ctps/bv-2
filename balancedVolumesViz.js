@@ -353,22 +353,6 @@ $(document).ready(function() {
     var route = $("#select_route option:selected").attr('value');
     currentRoute = CONFIG[route];
     initializeForRoute(currentRoute.route);
-
-    //  *** old code below this point ***
-/*
-    var q = d3.queue()
-                .defer(d3.json, geojsonURL)
-                .awaitAll(function(error, results) {
-                    if (error != null) {
-                        alert("Request to load GeoJSON data failed. Exiting application.");
-                        return;         
-                    }                    
-                    DATA.geojsonAll = results[0];  // This is the GeoJSON for *all* limited-access routes (a subset of these for now)
-                    var route = $("#select_route option:selected").attr('value');
-                    currentRoute = CONFIG[route];
-                    initializeForRoute(currentRoute.route);
-        });
-*/
 }); // document ready event handler
 
 // initializeForRoute()
@@ -442,6 +426,7 @@ function initializeForRoute(route) {
 //      results[3] - CSV data for layout of lanes diagram for primary direction of route
 //      results[4] - CSV data for location of town boundary lines in viz of secondary direction of route
 //      results[5] - CSV data for location of town boundary lines in viz of primary direction of route
+//      results[6] - GeoJSON for route (both directions, including ramps)
 //
 // Function: 
 //      1. Parse the various pieces of CSV data for the route in question
