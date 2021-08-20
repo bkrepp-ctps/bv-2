@@ -92,13 +92,23 @@ return false;
     <p>
     Download balanced volume data in Excel spreadsheet (.xls) format:
         <ul>
-            <li>
-                <a href="https://www.ctps.org/pub/Balanced_Volumes/i93_sr3_nb_balanced_volumes.xls">I-93/SR-3 northbound</a>
-            </li>
-            <li>
-                <a href="https://www.ctps.org/pub/Balanced_Volumes/i93_sr3_sb_balanced_volumes.xls">I-93/SR-3 southbound</a>
-            </li>
-        </ul>
+			<li>I-93/SR-3</li>
+				<ul>
+					<li>
+						<a href="https://www.ctps.org/pub/Balanced_Volumes/i93_sr3_nb_balanced_volumes.xls">Northbound</a>
+					</li>
+					<li>
+						<a href="https://www.ctps.org/pub/Balanced_Volumes/i93_sr3_sb_balanced_volumes.xls">Southbound</a>
+					</li>
+				</ul>
+			<li>US-1</li>
+				<li>
+					<a href="https://www.ctps.org/pub/Balanced_Volumes/us1_nb_balanced_volumes.xls">Northbound</a>
+				</li>
+				<li>
+					<a href="https://www.ctps.org/pub/Balanced_Volumes/us1_sb_balanced_volumes.xls">Southbound</a>
+				</li>
+		</ul>
     </p>
     
     <h3>Description of Spreadsheet Columns</h3>   
@@ -125,106 +135,111 @@ return false;
             </tr>            
              <tr>
                 <td>yr_1999</td>
-                <td>1 = segment was present in 1999; 0 = segment was not present in 1999</td>
+                <td>1 = segment was present in 1999; 0 = segment was not present in 1999; only applies to I-93/SR-3 spreadsheet</td>
             </tr>            
              <tr>
                 <td>yr_2010</td>
-                <td>1 = segment was present in 2010; 0 = segment was not present in 2010</td>
+                <td>1 = segment was present in 2010; 0 = segment was not present in 2010; only applies to I-93/SR-3 spreadsheet</td>
             </tr>           
-            <!-- 2018 -->
+            <!-- 2019 -->
            <tr>
-                <td>awdt_2018</td>
-                <td>Balanced average weekday daily traffic volume in 2010</td>
+                <td>awdt_2019</td>
+                <td>Balanced average weekday daily traffic volume in 2019</td>
             </tr>            
             <tr>
-                <td>peak_2018_6_to_7_am</td>
-                <td>Balanced volume between 6:00 a.m. to 7:00 a.m. in 2018</td>
+                <td>peak_2019_6_to_7_am</td>
+                <td>Balanced volume between 6:00 a.m. to 7:00 a.m. in 2019</td>
             </tr>   
             <tr>
-                <td>peak_2018_7_to_8_am</td>
-                <td>Balanced volume between 7:00 a.m. to 8:00 a.m. in 2018 </td>
+                <td>peak_2019_7_to_8_am</td>
+                <td>Balanced volume between 7:00 a.m. to 8:00 a.m. in 2019 </td>
             </tr>
             <tr>
-                <td>peak_2018_8_to_9_am</td>
-                <td>Balanced volume between 8:00 a.m. to 9:00 a.m. in 2018 </td>
+                <td>peak_2019_8_to_9_am</td>
+                <td>Balanced volume between 8:00 a.m. to 9:00 a.m. in 2019 </td>
             </tr>
             <tr>
-                <td>peak_2018_9_to_10_am</td>
-                <td>Balanced volume between 9:00 a.m. to 10:00 a.m. in 2018 </td>
+                <td>peak_2019_9_to_10_am</td>
+                <td>Balanced volume between 9:00 a.m. to 10:00 a.m. in 2019 </td>
             </tr>
             <tr>
-                <td>peak_2018_3_to_4_pm</td>
-                <td>Balanced volume between 3:00 p.m. to 4:00 p.m. in 2018 </td>
+                <td>peak_2019_3_to_4_pm</td>
+                <td>Balanced volume between 3:00 p.m. to 4:00 p.m. in 2019 </td>
             </tr>           
             <tr>
-                <td>peak_2018_4_to_5_pm</td>
-                <td>Balanced volume between 4:00 p.m. to 5:00 p.m. in 2018 </td>
+                <td>peak_2019_4_to_5_pm</td>
+                <td>Balanced volume between 4:00 p.m. to 5:00 p.m. in 2019 </td>
             </tr>            
             <tr>
-                <td>peak_2018_5_to_6_pm</td>
-                <td>Balanced volume between 5:00 p.m. to 6:00 p.m. in 2018 </td>
+                <td>peak_2019_5_to_6_pm</td>
+                <td>Balanced volume between 5:00 p.m. to 6:00 p.m. in 2019 </td>
             </tr>           
             <tr>
-                <td>peak_2018_6_to_7_pm</td>
-                <td>Balanced volume between 6:00 p.m. to 7:00 p.m. in 2018 </td>
+                <td>peak_2019_6_to_7_pm</td>
+                <td>Balanced volume between 6:00 p.m. to 7:00 p.m. in 2019 </td>
             </tr>  
             <tr>
-                <td>cum_2018_6_to_9_am</td>
-                <td>Balanced volume in morning peak period (6:00 a.m. to 9:00 a.m.) in 2018 </td>
+                <td>cum_2019_6_to_9_am</td>
+                <td>Balanced volume in morning peak period (6:00 a.m. to 9:00 a.m.) in 2019 </td>
             </tr>
             <tr>
-                <td>cum_2018_3_to_6_pm</td>
-                <td>Balanced volume in afternoon peak period (3:00 p.m. to 6:00 p.m.) in 2018 </td>
+                <td>cum_2019_3_to_6_pm</td>
+                <td>Balanced volume in afternoon peak period (3:00 p.m. to 6:00 p.m.) in 2019 </td>
             </tr>                       
             <!-- 2010 -->
             <tr>
                 <td>awdt_2010</td>
-                <td>Balanced average weekday daily traffic volume in 2010</td>
+                <td>Balanced average weekday daily traffic volume in 2010; only applies to I-93/SR-3 spreadsheet</td>
             </tr>            
             <tr>
                 <td>peak_2018_6_to_7_am</td>
-                <td>Balanced volume between 6:00 a.m. to 7:00 a.m. in 2010</td>
+                <td>Balanced volume between 6:00 a.m. to 7:00 a.m. in 2010; only applies to I-93/SR-3 spreadsheet</td>
             </tr>   
             <tr>
                 <td>peak_2018_7_to_8_am</td>
-                <td>Balanced volume between 7:00 a.m. to 8:00 a.m. in 2010 </td>
+                <td>Balanced volume between 7:00 a.m. to 8:00 a.m. in 2010; only applies to I-93/SR-3 spreadsheet </td>
             </tr>
             <tr>
                 <td>peak_2018_8_to_9_am</td>
-                <td>Balanced volume between 8:00 a.m. to 9:00 a.m. in 2010 </td>
+                <td>Balanced volume between 8:00 a.m. to 9:00 a.m. in 2010; only applies to I-93/SR-3 spreadsheet </td>
             </tr>
             <tr>
                 <td>peak_2018_9_to_10_am</td>
-                <td>Balanced volume between 9:00 a.m. to 10:00 a.m. in 2010 </td>
+                <td>Balanced volume between 9:00 a.m. to 10:00 a.m. in 2010; only applies to I-93/SR-3 spreadsheet </td>
             </tr>
             <tr>
                 <td>peak_2018_3_to_4_pm</td>
-                <td>Balanced volume between 3:00 p.m. to 4:00 p.m. in 2010 </td>
+                <td>Balanced volume between 3:00 p.m. to 4:00 p.m. in 2010; only applies to I-93/SR-3 spreadsheet </td>
             </tr>           
             <tr>
                 <td>peak_2018_4_to_5_pm</td>
-                <td>Balanced volume between 4:00 p.m. to 5:00 p.m. in 2010 </td>
+                <td>Balanced volume between 4:00 p.m. to 5:00 p.m. in 2010; only applies to I-93/SR-3 spreadsheet </td>
             </tr>            
             <tr>
                 <td>peak_2018_5_to_6_pm</td>
-                <td>Balanced volume between 5:00 p.m. to 6:00 p.m. in 2010 </td>
+                <td>Balanced volume between 5:00 p.m. to 6:00 p.m. in 2010; only applies to I-93/SR-3 spreadsheet </td>
             </tr>           
             <tr>
                 <td>peak_2018_6_to_7_pm</td>
-                <td>Balanced volume between 6:00 p.m. to 7:00 p.m. in 2010 </td>
+                <td>Balanced volume between 6:00 p.m. to 7:00 p.m. in 2010; only applies to I-93/SR-3 spreadsheet </td>
             </tr>  
             <tr>
                 <td>cum_2018_6_to_9_am</td>
-                <td>Balanced volume in morning peak period (6:00 a.m. to 9:00 a.m.) in 2010 </td>
+                <td>Balanced volume in morning peak period (6:00 a.m. to 9:00 a.m.) in 2010; only applies to I-93/SR-3 spreadsheet </td>
             </tr>
             <tr>
                 <td>cum_2018_3_to_6_pm</td>
-                <td>Balanced volume in afternoon peak period (3:00 p.m. to 6:00 p.m.) in 2010 </td>
-            </tr>             
+                <td>Balanced volume in afternoon peak period (3:00 p.m. to 6:00 p.m.) in 2010; only applies to I-93/SR-3 spreadsheet </td>
+            </tr>       
+            <!-- 2007 -->			
+			<tr>
+                <td>awdt_2007</td>
+                <td>Balanced average weekday daily traffic volume in 2007; only applies to US-1 spreadsheet</td>
+            </tr>            
             <!-- 1999 -->
            <tr>
                 <td>awdt_1999</td>
-                <td>Balanced average weekday daily traffic volume in 1999 </td>
+                <td>Balanced average weekday daily traffic volume in 1999; only applies to I-93/SR-3 spreadsheet </td>
             </tr>
             </tbody>
          </table>
@@ -239,6 +254,9 @@ return false;
             <li>
                 <a href="https://www.ctps.org/pub/Balanced_Volumes/i93_and_sr3_complete.geojson">I-93/SR-3 northbound and southbound</a>
             </li>
+			<li>
+				<a href="https://www.ctps.org/pub/Balanced_Volumes/us1.geojson"> US-1 northbound and southbound</a>
+			</li>
         </ul>
     </p>    
             
